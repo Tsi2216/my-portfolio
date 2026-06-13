@@ -1,37 +1,48 @@
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const TESTI = [
   {
     name: 'Dawit Bekele',
-    role: 'Product Manager, TechBridge Solutions',
+    role: 'Product Manager',
     initials: 'DB',
     color: '#00E5FF',
     stars: 5,
-    text: 'Tsion delivered an exceptional marketplace platform that exceeded our expectations. The code quality, attention to detail, and user experience she created was truly impressive for a junior developer. I would highly recommend her for any web development project.',
+    text: 'Exceptional work on our marketplace platform. Clean code, great UX, and delivered on time.',
   },
   {
     name: 'Sara Haile',
-    role: 'Startup Founder, EthioShop',
+    role: 'Startup Founder',
     initials: 'SH',
     color: '#60a5fa',
     stars: 5,
-    text: 'Working with Tsion on our e-commerce platform was fantastic. She understood our vision immediately, asked the right questions, and delivered a polished, scalable product on time. Her TypeScript and React expertise are genuinely top-notch.',
+    text: 'Professional, detail-oriented, and highly skilled with React and TypeScript.',
   },
   {
     name: 'Michael Tadesse',
-    role: 'Senior Developer, CodeCraft Africa',
+    role: 'Senior Developer',
     initials: 'MT',
     color: '#34d399',
     stars: 5,
-    text: 'I mentored Tsion through several projects and was consistently amazed by her rapid growth and dedication. She writes clean, well-structured code and has a natural ability to understand complex systems quickly. She has a very bright future ahead.',
+    text: 'Fast learner with excellent problem-solving skills and strong coding practices.',
   },
 ];
 
 export default function Testimonials() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
+
+  const [current, setCurrent] = useState(0);
+
+  const next = () => {
+    setCurrent((prev) => (prev + 1) % TESTI.length);
+  };
+
+  const prev = () => {
+    setCurrent((prev) => (prev - 1 + TESTI.length) % TESTI.length);
+  };
+
   return (
     <section className="section-pad bg-[#080808] relative overflow-hidden">
       <div className="orb w-72 h-72 right-0 top-1/2 -translate-y-1/2 bg-blue-600/[0.03]" />
@@ -44,48 +55,111 @@ export default function Testimonials() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-[#00E5FF] text-xs font-semibold tracking-[0.2em] uppercase mb-3">What People Say</p>
+          <p className="text-[#00E5FF] text-xs font-semibold tracking-[0.2em] uppercase mb-3">
+            What People Say
+          </p>
+
           <h2 className="font-display font-bold text-4xl md:text-5xl mb-4">
             <span className="gradient-text">Testimonials</span>
           </h2>
+
           <div className="w-14 h-[2px] bg-gradient-to-r from-[#00E5FF] to-transparent mx-auto" />
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-5">
-          {TESTI.map((t, i) => (
+        <div className="max-w-2xl mx-auto">
+          <AnimatePresence mode="wait">
             <motion.div
-              key={t.name}
-              className="glass-card p-6 flex flex-col"
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.55, delay: i * 0.12 }}
+              key={current}
+              className="glass-card p-8"
+              initial={{ opacity: 0, x: 80 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -80 }}
+              transition={{ duration: 0.35 }}
             >
-              <Quote size={26} style={{ color: t.color, opacity: 0.35 }} className="mb-4 flex-shrink-0" />
-              <p className="text-gray-500 text-sm leading-relaxed flex-1 mb-6">"{t.text}"</p>
+              <Quote
+                size={30}
+                style={{
+                  color: TESTI[current].color,
+                  opacity: 0.35,
+                }}
+                className="mb-5"
+              />
+
+              <p className="text-gray-400 leading-relaxed mb-8 text-center">
+                "{TESTI[current].text}"
+              </p>
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0"
-                    style={{ background: t.color }}
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-black font-bold"
+                    style={{
+                      background: TESTI[current].color,
+                    }}
                   >
-                    {t.initials}
+                    {TESTI[current].initials}
                   </div>
+
                   <div>
-                    <p className="text-white font-medium text-sm">{t.name}</p>
-                    <p className="text-gray-700 text-xs leading-snug">{t.role}</p>
+                    <h4 className="text-white font-medium">
+                      {TESTI[current].name}
+                    </h4>
+
+                    <p className="text-gray-500 text-sm">
+                      {TESTI[current].role}
+                    </p>
                   </div>
                 </div>
-                <div className="flex gap-0.5 flex-shrink-0">
-                  {Array.from({ length: t.stars }).map((_, si) => (
-                    <Star key={si} size={11} style={{ color: t.color }} className="fill-current" />
+
+                <div className="flex gap-1">
+                  {Array.from({
+                    length: TESTI[current].stars,
+                  }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={14}
+                      style={{
+                        color: TESTI[current].color,
+                      }}
+                      className="fill-current"
+                    />
                   ))}
                 </div>
               </div>
             </motion.div>
-          ))}
+          </AnimatePresence>
+
+          <div className="flex justify-center gap-4 mt-6">
+            <button
+              onClick={prev}
+              className="w-11 h-11 rounded-full glass-card flex items-center justify-center hover:scale-105 transition"
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            <button
+              onClick={next}
+              className="w-11 h-11 rounded-full glass-card flex items-center justify-center hover:scale-105 transition"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+
+          <div className="flex justify-center gap-2 mt-5">
+            {TESTI.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrent(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  current === index
+                    ? 'w-8 bg-[#00E5FF]'
+                    : 'w-2 bg-white/20'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
-}
+                }
